@@ -23,8 +23,6 @@
 #include <vector>
 #include <string>
 #include <Chroma/Types/XYZ.hpp>
-#include <Chroma/Data/PhotopicEfficiency.hpp>
-#include <Chroma/Data/StandardObservers.hpp>
 
 namespace Chroma {
 

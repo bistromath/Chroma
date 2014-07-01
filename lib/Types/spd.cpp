@@ -5,6 +5,7 @@
  */
 
 #include <Chroma/Types/spd.hpp>
+#include <Chroma/Data/Data.hpp>
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>

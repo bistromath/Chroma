@@ -1,3 +1,4 @@
+#pragma once
 #include "Config.hpp"
 #include "Types/spd.hpp"
 #include "Types/XYZ.hpp"
