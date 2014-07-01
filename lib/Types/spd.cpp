@@ -190,9 +190,19 @@ Chroma::spd Chroma::spd::normalize(void)
     return operator/(max);
 }
 
+float Chroma::spd::sum(void)
+{
+    return std::accumulate(_powers.begin(), _powers.end(), 0);
+}
+
 Chroma::XYZ Chroma::spd::XYZ(void)
 {
     return {0,0,0};
+}
+
+float Chroma::spd::lumens(void)
+{
+    return 0;
 }
 
 /* Perform piecewise linear interpolation to reshape the SPD to a new set of wavelengths.

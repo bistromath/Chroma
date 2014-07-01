@@ -56,6 +56,7 @@ public:
     /* Type conversions */
     Chroma::XYZ XYZ();
     float lumens();
+    float sum();
 
     /* Getters */
     const std::vector<float> &wavelengths() const;
