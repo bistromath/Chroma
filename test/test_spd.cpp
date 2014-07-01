@@ -18,6 +18,21 @@ BOOST_AUTO_TEST_CASE(test_spd_construct)
 
     std::vector<float> w2(101);
     BOOST_CHECK_THROW(Chroma::spd(w2, p), std::runtime_error); //TODO require specific exception
+
+    /* Test copy, copy assignment, move, and move assignment operators */
+    std::cout << "Starting copy constructor" << std::endl;
+    Chroma::spd spd2(spd1);
+    std::cout << "Ending copy constructor" << std::endl;
+
+    /* Test move assignment */
+    std::cout << "Starting move assignment" << std::endl;
+    spd1 = Chroma::spd({1,2,3,4,5}, {10,20,30,40,50});
+    std::cout << "Ending move assignment" << std::endl;
+
+    /* Test copy assignment */
+    std::cout << "Starting copy assignment" << std::endl;
+    spd1 = spd2;
+    std::cout << "Ending copy assignment" << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE(test_spd_equals)
@@ -51,13 +66,13 @@ BOOST_AUTO_TEST_CASE(test_spd_math)
 
     for(int i=0; i<100; i++) {
         w1[i] = 350+5*i;
-        p1[i] = i;
-        w2[i] = 351+5*i;
-        p2[i] = i-1;
+        p1[i] = i+1;
+        w2[i] = 350+5*i;
+        p2[i] = i+2;
     }
     for(int i=0; i<200; i++) {
         w3[i] = 350+2.5*i;
-        p3[i] = i/2;
+        p3[i] = i/2+1;
     }
 
     Chroma::spd spd1(w1, p1), spd2(w2, p2), spd3(w3, p3);
@@ -79,5 +94,15 @@ BOOST_AUTO_TEST_CASE(test_spd_math)
         BOOST_CHECK(spd1_d_2.powers()[i] == spd1.powers()[i] / spd2.powers()[i]);
     }
 
-    //TODO test reshaped results
+    BOOST_CHECK_EQUAL(spd1_p_3.wavelengths().size(), 200);
+    BOOST_CHECK_EQUAL(spd1_m_3.wavelengths().size(), 200);
+    BOOST_CHECK_EQUAL(spd1_t_3.wavelengths().size(), 200);
+    BOOST_CHECK_EQUAL(spd1_d_3.wavelengths().size(), 200);
+
+    for(size_t i=0; i<200; i+=2) {
+        BOOST_CHECK(spd1_p_3.powers()[i] == spd1.powers()[i/2] + spd3.powers()[i]);
+        BOOST_CHECK(spd1_m_3.powers()[i] == spd1.powers()[i/2] - spd3.powers()[i]);
+        BOOST_CHECK(spd1_t_3.powers()[i] == spd1.powers()[i/2] * spd3.powers()[i]);
+        BOOST_CHECK(spd1_d_3.powers()[i] == spd1.powers()[i/2] / spd3.powers()[i]);
+    }
 }

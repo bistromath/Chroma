@@ -23,7 +23,7 @@ include_directories(${CHROMA_INCLUDE_DIRS})
 
 list(APPEND CHROMA_SOURCES
     Types/spd.cpp
-    #    xyz.cpp
+    Types/XYZ.cpp
     #rgbw.cpp
     #cri.cpp
 )
