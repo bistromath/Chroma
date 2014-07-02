@@ -28,7 +28,7 @@ namespace Chroma {
 
 class CHROMA_API spd {
 public:
-    spd(void);
+    spd();
     /* Create an SPD from a pair of lists {wavelengths, powers} */
     spd(const std::vector<float> &wavelengths, const std::vector<float> &powers);
 
@@ -42,19 +42,19 @@ public:
     spd& operator=(spd &&other);
 
     /* Math operations */
-    bool operator==(const spd &other);
-    bool operator!=(const spd &other);
-    spd operator+(const spd &other);
-    spd operator-(const spd &other);
-    spd operator*(const spd &other);
-    spd operator/(const spd &other);
-    spd operator*(const float other);
-    spd operator/(const float other);
+    bool operator==(const spd &other) const;
+    bool operator!=(const spd &other) const;
+    spd operator+(const spd &other) const;
+    spd operator-(const spd &other) const;
+    spd operator*(const spd &other) const;
+    spd operator/(const spd &other) const;
+    spd operator*(const float other) const;
+    spd operator/(const float other) const;
 
     /* Type conversions */
-    Chroma::XYZ XYZ();
-    float lumens();
-    float sum();
+    Chroma::XYZ XYZ() const;
+    float lumens() const;
+    float sum() const;
 
     /* Getters */
     const std::vector<float> &wavelengths() const;
@@ -64,17 +64,17 @@ public:
     spd reshape(const std::vector<float> &new_wavelengths) const;
 
     /* Return a new SPD normalized to max power 1 */
-    spd normalize();
+    spd normalize() const;
 
     /* Return a new SPD normalized to desired lumenosity */
-    spd normalize_lumenosity(float lumens);
+    spd normalize_lumenosity(float lumens) const;
 
 private:
 //    std::vector<std::pair<float, float> > data;
     std::vector<float> _wavelengths;
     std::vector<float> _powers;
 
-    spd arithmetic(const spd &other, std::string operation);
+    spd arithmetic(const spd &other, std::string operation) const;
 };
 
 } //namespace Chroma

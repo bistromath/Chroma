@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <Chroma/Types/spd.hpp>
+#include <Chroma/Data/StandardIlluminants.hpp>
 
 BOOST_AUTO_TEST_CASE(test_spd_construct)
 {
@@ -106,3 +107,20 @@ BOOST_AUTO_TEST_CASE(test_spd_math)
         BOOST_CHECK(spd1_d_3.powers()[i] == spd1.powers()[i/2] / spd3.powers()[i]);
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_spd_lumenosity)
+{
+
+
+
+}
+
+BOOST_AUTO_TEST_CASE(test_spd_xyz)
+{
+    const Chroma::XYZ result = Chroma::F4_illuminant.XYZ();
+    std::cout << "X: " << result.X << " Y: " << result.Y << " Z: " << result.Z << std::endl;
+    Chroma::xyY chromaticity = result.xyY();
+    BOOST_CHECK_CLOSE(chromaticity.x, 0.44018, 1e-3);
+    BOOST_CHECK_CLOSE(chromaticity.y, 0.40329, 1e-3);
+}
+

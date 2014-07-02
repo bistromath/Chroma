@@ -5,19 +5,17 @@
  */
 
 #include <Chroma/Types/spd.hpp>
-#include <Chroma/Data/Data.hpp>
+#include <Chroma/Data/PhotopicEfficiency.hpp>
+#include <Chroma/Data/StandardObservers.hpp>
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
 
-Chroma::spd::spd(void)
+Chroma::spd::spd()
 {}
 
-Chroma::spd::spd(const std::vector<float> &wavelengths, const std::vector<float> &powers) :
-    _wavelengths(wavelengths),
-    _powers(powers)
+Chroma::spd::spd(const std::vector<float> &wavelengths, const std::vector<float> &powers)
 {
-    std::cout << "Initializing constructor" << std::endl;
     if(wavelengths.size() != powers.size()) throw std::runtime_error("Wavelength and power vectors must be the same length");
 
     /* Check to see that wavelength array is monotonic and equally spaced.
@@ -36,13 +34,14 @@ Chroma::spd::spd(const std::vector<float> &wavelengths, const std::vector<float>
             throw std::runtime_error("Wavelength array must be monotonically increasing.");
         }
     }
+    _wavelengths = wavelengths;
+    _powers = powers;
 }
 
 Chroma::spd::spd(const Chroma::spd &other)
     : _wavelengths(other.wavelengths()),
       _powers(other.powers())
 {
-    std::cout << "Copy constructor" << std::endl;
 }
 
 /* TODO: find out if STL will automatically move rvalues in the copy constructor */
@@ -51,12 +50,10 @@ Chroma::spd::spd(Chroma::spd &&other)
       _powers(std::move(other.powers()))
 
 {
-    std::cout << "Move constructor" << std::endl;
 }
 
 Chroma::spd& Chroma::spd::operator=(const spd &other)
 {
-    std::cout << "Copy assignment" << std::endl;
     _wavelengths = other.wavelengths();
     _powers = other.powers();
     return *this;
@@ -64,7 +61,6 @@ Chroma::spd& Chroma::spd::operator=(const spd &other)
 
 Chroma::spd& Chroma::spd::operator=(spd &&other)
 {
-    std::cout << "Move assignment" << std::endl;
     _wavelengths = std::move(other.wavelengths());
     _powers = std::move(other.powers());
     return *this;
@@ -80,17 +76,17 @@ const std::vector<float> &Chroma::spd::powers(void) const
     return _powers;
 }
 
-bool Chroma::spd::operator==(const Chroma::spd &other)
+bool Chroma::spd::operator==(const Chroma::spd &other) const
 {
     return (_wavelengths == other.wavelengths() and _powers == other.powers());
 }
 
-bool Chroma::spd::operator!=(const Chroma::spd &other)
+bool Chroma::spd::operator!=(const Chroma::spd &other) const
 {
     return not operator==(other);
 }
 
-Chroma::spd Chroma::spd::arithmetic(const Chroma::spd &other, std::string operation)
+Chroma::spd Chroma::spd::arithmetic(const Chroma::spd &other, std::string operation) const
 {
     /* This byzantine construction is an attempt to avoid copy-construction
      * while also avoiding rewrite of the arithmetic logic at the bottom.
@@ -145,27 +141,27 @@ Chroma::spd Chroma::spd::arithmetic(const Chroma::spd &other, std::string operat
     return {lhs->wavelengths(), result};
 }
 
-Chroma::spd Chroma::spd::operator+(const Chroma::spd &other)
+Chroma::spd Chroma::spd::operator+(const Chroma::spd &other) const
 {
     return arithmetic(other, "+");
 }
 
-Chroma::spd Chroma::spd::operator-(const Chroma::spd &other)
+Chroma::spd Chroma::spd::operator-(const Chroma::spd &other) const
 {
     return arithmetic(other, "-");
 }
 
-Chroma::spd Chroma::spd::operator*(const Chroma::spd &other)
+Chroma::spd Chroma::spd::operator*(const Chroma::spd &other) const
 {
     return arithmetic(other, "*");
 }
 
-Chroma::spd Chroma::spd::operator/(const Chroma::spd &other)
+Chroma::spd Chroma::spd::operator/(const Chroma::spd &other) const
 {
     return arithmetic(other, "/");
 }
 
-Chroma::spd Chroma::spd::operator*(const float other)
+Chroma::spd Chroma::spd::operator*(const float other) const
 {
     std::vector<float> result(_wavelengths.size());
     for(size_t i=0; i<result.size(); i++)
@@ -175,7 +171,7 @@ Chroma::spd Chroma::spd::operator*(const float other)
     return {_wavelengths, result};
 }
 
-Chroma::spd Chroma::spd::operator/(const float other)
+Chroma::spd Chroma::spd::operator/(const float other) const
 {
     std::vector<float> result(_wavelengths.size());
     for(size_t i=0; i<result.size(); i++)
@@ -185,25 +181,30 @@ Chroma::spd Chroma::spd::operator/(const float other)
     return {_wavelengths, result};
 }
 
-Chroma::spd Chroma::spd::normalize(void)
+Chroma::spd Chroma::spd::normalize(void) const
 {
     float max = *std::max_element(_powers.begin(), _powers.end());
     return operator/(max);
 }
 
-float Chroma::spd::sum(void)
+float Chroma::spd::sum(void) const
 {
-    return std::accumulate(_powers.begin(), _powers.end(), 0);
+    return std::accumulate(_powers.begin(), _powers.end(), 0.0);
 }
 
-Chroma::XYZ Chroma::spd::XYZ(void)
+Chroma::XYZ Chroma::spd::XYZ(void) const
 {
-    return {0,0,0};
+    Chroma::spd X(operator*(Chroma::CIE1931_X));
+    Chroma::spd Y(operator*(Chroma::CIE1931_Y));
+    Chroma::spd Z(operator*(Chroma::CIE1931_Z));
+    return {X.sum(),Y.sum(),Z.sum()};
 }
 
-float Chroma::spd::lumens(void)
+float Chroma::spd::lumens(void) const
 {
-    return 0;
+    const float photopic_conv = 683;
+    Chroma::spd p(operator*(Chroma::CIE1931_photopic_eff));
+    return photopic_conv * p.sum();
 }
 
 /* Perform piecewise linear interpolation to reshape the SPD to a new set of wavelengths.
