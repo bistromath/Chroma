@@ -191,6 +191,11 @@ Chroma::spd Chroma::spd::normalize(void) const
     return *this/(max);
 }
 
+Chroma::spd Chroma::spd::normalize_luminosity(float lumens) const
+{
+    return *this*lumens/sum();
+}
+
 float Chroma::spd::sum(void) const
 {
     return std::accumulate(_powers.begin(), _powers.end(), 0.0);
