@@ -87,19 +87,7 @@ bool Chroma::operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs)
 
 Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, std::string operation)
 {
-    /* This byzantine construction is an attempt to avoid copy-construction
-     * while also avoiding rewrite of the arithmetic logic at the bottom.
-     * We can't use references because they have to be initialized here and
-     * we don't know what they will be yet. We can't use regular Chroma::spd
-     * and depend on the move assignment operator because other is const and
-     * will thus copy. We can't just use pointers because we can't cast away
-     * constness.
-     *
-     * We create a temporary object to hold the reshaped side (whichever that is)
-     * and a couple of const pointers to point to the correct sides and maintain
-     * order for non-commutative operations. We safely const_cast the temporary
-     * object to assign the pointer.
-     */
+    /* Anything gross in here is an effort to avoid copy-construction */
     const Chroma::spd *lhs, *rhs;
     Chroma::spd temp;
     if(l.wavelengths().size() < 2 or r.wavelengths().size() < 2)
