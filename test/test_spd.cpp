@@ -110,9 +110,8 @@ BOOST_AUTO_TEST_CASE(test_spd_math)
 
 BOOST_AUTO_TEST_CASE(test_spd_lumenosity)
 {
-
-
-
+    const float lumenosity = Chroma::F4_illuminant.lumens();
+    BOOST_CHECK_CLOSE(lumenosity, 199800.8, 1e-1); /* checked against colorimetry.py */
 }
 
 BOOST_AUTO_TEST_CASE(test_spd_xyz)
@@ -120,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_spd_xyz)
     const Chroma::XYZ result = Chroma::F4_illuminant.XYZ();
     std::cout << "X: " << result.X << " Y: " << result.Y << " Z: " << result.Z << std::endl;
     Chroma::xyY chromaticity = result.xyY();
-    BOOST_CHECK_CLOSE(chromaticity.x, 0.44018, 1e-3);
+    BOOST_CHECK_CLOSE(chromaticity.x, 0.44018, 1e-3); /* both checked against colorimetry.py */
     BOOST_CHECK_CLOSE(chromaticity.y, 0.40329, 1e-3);
 }
 
