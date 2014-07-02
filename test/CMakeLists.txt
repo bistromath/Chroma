@@ -30,6 +30,7 @@ endif()
 
 set(test_sources
     test_spd.cpp
+    test_std_illum.cpp
 )
 
 include_directories(${CHROMA_INCLUDE_DIRS})

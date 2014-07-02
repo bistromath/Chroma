@@ -24,6 +24,7 @@ include_directories(${CHROMA_INCLUDE_DIRS})
 list(APPEND CHROMA_SOURCES
     Types/spd.cpp
     Types/XYZ.cpp
+    Data/StandardIlluminants.cpp
     #rgbw.cpp
     #cri.cpp
 )
