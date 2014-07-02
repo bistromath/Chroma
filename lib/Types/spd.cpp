@@ -48,7 +48,6 @@ Chroma::spd::spd(const Chroma::spd &other)
 Chroma::spd::spd(Chroma::spd &&other)
     : _wavelengths(std::move(other.wavelengths())),
       _powers(std::move(other.powers()))
-
 {
 }
 
@@ -76,17 +75,17 @@ const std::vector<float> &Chroma::spd::powers(void) const
     return _powers;
 }
 
-bool Chroma::spd::operator==(const Chroma::spd &other) const
+bool Chroma::operator==(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return (_wavelengths == other.wavelengths() and _powers == other.powers());
+    return (lhs.wavelengths() == rhs.wavelengths() and lhs.powers() == rhs.powers());
 }
 
-bool Chroma::spd::operator!=(const Chroma::spd &other) const
+bool Chroma::operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return not operator==(other);
+    return not (lhs==rhs);
 }
 
-Chroma::spd Chroma::spd::arithmetic(const Chroma::spd &other, std::string operation) const
+Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, std::string operation)
 {
     /* This byzantine construction is an attempt to avoid copy-construction
      * while also avoiding rewrite of the arithmetic logic at the bottom.
@@ -103,32 +102,32 @@ Chroma::spd Chroma::spd::arithmetic(const Chroma::spd &other, std::string operat
      */
     const Chroma::spd *lhs, *rhs;
     Chroma::spd temp;
-    if(_wavelengths.size() < 2 or other.wavelengths().size() < 2)
+    if(l.wavelengths().size() < 2 or r.wavelengths().size() < 2)
     {
         throw std::runtime_error("Attempting to do math on an empty SPD.");
     }
-    if(other.wavelengths() != _wavelengths)
+    if(l.wavelengths() != r.wavelengths())
     {
         /* we're going to reshape to match the one with the best resolution. */
-        float lhsstep = _wavelengths[1]-_wavelengths[0];
-        float rhsstep = other.wavelengths()[1] - other.wavelengths()[0];
+        float lhsstep = l.wavelengths()[1]-l.wavelengths()[0];
+        float rhsstep = r.wavelengths()[1] - r.wavelengths()[0];
         if(lhsstep < rhsstep)
         {
-            lhs = this;
-            temp = other.reshape(_wavelengths);
+            lhs = &l;
+            temp = r.reshape(l.wavelengths());
             rhs = const_cast <const Chroma::spd *>(&temp);
         }
         else
         {
-            temp = reshape(other.wavelengths());
+            temp = l.reshape(r.wavelengths());
             lhs = const_cast <const Chroma::spd *>(&temp);
-            rhs = &other;
+            rhs = &r;
         }
     }
     else
     {
-        lhs = this;
-        rhs = &other;
+        lhs = &l;
+        rhs = &r;
     }
     std::vector<float> result(lhs->wavelengths().size());
     for(size_t i=0; i<result.size(); i++)
@@ -141,50 +140,55 @@ Chroma::spd Chroma::spd::arithmetic(const Chroma::spd &other, std::string operat
     return {lhs->wavelengths(), result};
 }
 
-Chroma::spd Chroma::spd::operator+(const Chroma::spd &other) const
+Chroma::spd Chroma::operator+(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return arithmetic(other, "+");
+    return spd_arithmetic(lhs, rhs, "+");
 }
 
-Chroma::spd Chroma::spd::operator-(const Chroma::spd &other) const
+Chroma::spd Chroma::operator-(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return arithmetic(other, "-");
+    return spd_arithmetic(lhs, rhs, "-");
 }
 
-Chroma::spd Chroma::spd::operator*(const Chroma::spd &other) const
+Chroma::spd Chroma::operator*(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return arithmetic(other, "*");
+    return spd_arithmetic(lhs, rhs, "*");
 }
 
-Chroma::spd Chroma::spd::operator/(const Chroma::spd &other) const
+Chroma::spd Chroma::operator/(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return arithmetic(other, "/");
+    return spd_arithmetic(lhs, rhs, "/");
 }
 
-Chroma::spd Chroma::spd::operator*(const float other) const
+Chroma::spd Chroma::operator*(const Chroma::spd &lhs, float rhs)
 {
-    std::vector<float> result(_wavelengths.size());
+    std::vector<float> result(lhs.wavelengths().size());
     for(size_t i=0; i<result.size(); i++)
     {
-        result[i] = _powers[i] * other;
+        result[i] = lhs.powers()[i] * rhs;
     }
-    return {_wavelengths, result};
+    return {lhs.wavelengths(), result};
 }
 
-Chroma::spd Chroma::spd::operator/(const float other) const
+Chroma::spd Chroma::operator*(float lhs, const Chroma::spd &rhs)
 {
-    std::vector<float> result(_wavelengths.size());
+    return rhs*lhs;
+}
+
+Chroma::spd Chroma::operator/(const Chroma::spd &lhs, const float rhs)
+{
+    std::vector<float> result(lhs.wavelengths().size());
     for(size_t i=0; i<result.size(); i++)
     {
-        result[i] = _powers[i] / other;
+        result[i] = lhs.powers()[i] / rhs;
     }
-    return {_wavelengths, result};
+    return {lhs.wavelengths(), result};
 }
 
 Chroma::spd Chroma::spd::normalize(void) const
 {
     float max = *std::max_element(_powers.begin(), _powers.end());
-    return operator/(max);
+    return *this/(max);
 }
 
 float Chroma::spd::sum(void) const
@@ -194,16 +198,16 @@ float Chroma::spd::sum(void) const
 
 Chroma::XYZ Chroma::spd::XYZ(void) const
 {
-    Chroma::spd X(operator*(Chroma::CIE1931_X));
-    Chroma::spd Y(operator*(Chroma::CIE1931_Y));
-    Chroma::spd Z(operator*(Chroma::CIE1931_Z));
+    Chroma::spd X(*this*(Chroma::CIE1931_X));
+    Chroma::spd Y(*this*(Chroma::CIE1931_Y));
+    Chroma::spd Z(*this*(Chroma::CIE1931_Z));
     return {X.sum(),Y.sum(),Z.sum()};
 }
 
 float Chroma::spd::lumens(void) const
 {
     const float photopic_conv = 683;
-    Chroma::spd p(operator*(Chroma::CIE1931_photopic_eff));
+    Chroma::spd p(*this*(Chroma::CIE1931_photopic_eff));
     return photopic_conv * p.sum();
 }
 

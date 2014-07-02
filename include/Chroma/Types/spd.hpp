@@ -41,16 +41,6 @@ public:
     spd& operator=(const spd &other);
     spd& operator=(spd &&other);
 
-    /* Math operations */
-    bool operator==(const spd &other) const;
-    bool operator!=(const spd &other) const;
-    spd operator+(const spd &other) const;
-    spd operator-(const spd &other) const;
-    spd operator*(const spd &other) const;
-    spd operator/(const spd &other) const;
-    spd operator*(const float other) const;
-    spd operator/(const float other) const;
-
     /* Type conversions */
     Chroma::XYZ XYZ() const;
     float lumens() const;
@@ -73,8 +63,18 @@ private:
 //    std::vector<std::pair<float, float> > data;
     std::vector<float> _wavelengths;
     std::vector<float> _powers;
-
-    spd arithmetic(const spd &other, std::string operation) const;
 };
+
+/* Math operations */
+Chroma::spd spd_arithmetic(const Chroma::spd &lhs, const Chroma::spd &rhs, std::string operation);
+bool CHROMA_API operator==(const Chroma::spd &lhs, const Chroma::spd &rhs);
+bool CHROMA_API operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator+(const Chroma::spd &lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator-(const Chroma::spd &lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator*(const Chroma::spd &lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator/(const Chroma::spd &lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator*(const Chroma::spd &lhs, float rhs);
+Chroma::spd CHROMA_API operator*(float lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator/(const Chroma::spd &lhs, float rhs);
 
 } //namespace Chroma
