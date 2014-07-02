@@ -21,4 +21,10 @@ BOOST_AUTO_TEST_CASE(test_d_illum)
     BOOST_CHECK_CLOSE(d50XYZ.y(), d50_chromaticity.y, 1e-3);
 }
 
-
+BOOST_AUTO_TEST_CASE(test_e_illum)
+{
+    Chroma::spd E = Chroma::spd({300,900}, {1, 1});
+    Chroma::XYZ E_chrom = E.XYZ();
+    BOOST_CHECK_CLOSE(E_chrom.x(), 1.0/3.0, 1e-3);
+    BOOST_CHECK_CLOSE(E_chrom.y(), 1.0/3.0, 1e-3);
+}

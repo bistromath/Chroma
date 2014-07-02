@@ -47,7 +47,7 @@ Chroma::xyY Chroma::XYZ::xyY(void) const
 {
     float sum = X+Y+Z;
     if(sum < FLT_MIN) return Chroma::xyY{0,0,0};
-    return {X/sum, Y/sum};
+    return {X/sum, Y/sum, Y};
 }
 
 float Chroma::XYZ::x(void) const
