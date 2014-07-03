@@ -45,7 +45,7 @@ Chroma::spd E_illuminant(void)
 Chroma::spd blackbody(float temp, std::vector<float> wavelengths)
 {
     const float h = 6.626070e-34;   /* Planck's constant */
-    const float c = 299792458.0;     /* speed of light */
+    const float c = 299792458;      /* speed of light */
     const float k = 1.380648e-23;   /* Boltzmann's constant */
 
     auto I = [&h, &c, &k, &temp](float wavelength)
@@ -56,6 +56,16 @@ Chroma::spd blackbody(float temp, std::vector<float> wavelengths)
     std::vector<float> powers(wavelengths.size());
     std::transform(wavelengths.begin(), wavelengths.end(), powers.begin(), I);
     return {wavelengths, powers};
+}
+
+Chroma::xyY blackbody_chromaticity(float temp)
+{
+    float u = (0.860117757 + 1.54118254e-4*temp + 1.28641212e-7*(temp*temp))
+            / (1 + 8.42420235e-4*temp + 7.08145163e-7*(temp*temp));
+    float v = (0.317398726 + 4.22806245e-5*temp + 4.20481691e-8*(temp*temp))
+            / (1 - 2.89741816e-5*temp + 1.61456053e-7*(temp*temp));
+    Chroma::XYZ xyz(Chroma::uv(u,v));
+    return xyz.xyY();
 }
 
 } /* namespace Chroma */

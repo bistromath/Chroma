@@ -35,4 +35,8 @@ BOOST_AUTO_TEST_CASE(test_blackbody)
     Chroma::xyY bb50_chroma = bb50.XYZ().xyY();
     BOOST_CHECK_CLOSE(bb50_chroma.x, 0.34520, 1e-1);
     BOOST_CHECK_CLOSE(bb50_chroma.y, 0.35169, 1e-1);
+
+    Chroma::xyY bb50_estim_chroma = Chroma::blackbody_chromaticity(5000);
+    BOOST_CHECK_CLOSE(bb50_estim_chroma.x, bb50_chroma.x, 1e-1);
+    BOOST_CHECK_CLOSE(bb50_estim_chroma.y, bb50_chroma.y, 1e-1);
 }
