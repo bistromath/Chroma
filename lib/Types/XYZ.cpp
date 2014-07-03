@@ -1,6 +1,6 @@
 #include <Chroma/Chroma.hpp>
-#include <cfloat> //TODO FLT_MIN C++?
-#include <cmath> //TODO powf C++?
+#include <cfloat>
+#include <cmath>
 
 //TODO FIXME put in Util.cpp
 inline float fsel(float a, float b, float c)
@@ -27,7 +27,13 @@ Chroma::XYZ::XYZ(const Chroma::xyY &chrom)
 
 Chroma::XYZ::XYZ(const Chroma::uv &chrom)
 {
-    float tmp = clip(2*chrom.u - 8*chrom.v + 4, FLT_MIN, FLT_MAX);
+    float tmp = 2*chrom.u - 8*chrom.v + 4;
+    if(tmp < FLT_MIN)
+    {
+        X=0;
+        Y=0;
+        Z=0;
+    }
     float x = 3*chrom.u / tmp;
     float y = 2*chrom.v / tmp;
     Chroma::XYZ wat(Chroma::xyY(x,y)); //FIXME why do i have to do this arrgghh
@@ -58,6 +64,13 @@ Chroma::xyY::xyY(const Chroma::XYZ &xyz)
     }
 }
 
+float Chroma::operator-(const Chroma::xyY &lhs, const Chroma::xyY &rhs)
+{
+    float dx = lhs.x - rhs.x;
+    float dy = lhs.y - rhs.y;
+    return {sqrtf((dx*dx)+(dy*dy))};
+}
+
 Chroma::uv::uv(const Chroma::XYZ &xyz)
 {
     float sum = xyz.X+15*xyz.Y+3*xyz.Z;
@@ -70,6 +83,13 @@ Chroma::uv::uv(const Chroma::XYZ &xyz)
         u=4*xyz.X/sum;
         v=6*xyz.Y/sum;
     }
+}
+
+float Chroma::operator-(const Chroma::uv &lhs, const Chroma::uv &rhs)
+{
+    float du = lhs.u - rhs.u;
+    float dv = lhs.v - rhs.v;
+    return {sqrtf((du*du)+(dv*dv))};
 }
 
 Chroma::UVW::UVW(const Chroma::XYZ &xyz, const XYZ &whitepoint)

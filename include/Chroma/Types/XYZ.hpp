@@ -20,7 +20,7 @@ struct UVW;
 struct Lab;
 struct rgb;
 
-/* TODO: move operators outside the class, and add uv differencing (dUV) */
+/* TODO: add u'v' differencing */
 
 struct CHROMA_API XYZ {
     /* Constructors */
@@ -41,31 +41,41 @@ Chroma::XYZ CHROMA_API operator*(const Chroma::XYZ &lhs, float rhs);
 Chroma::XYZ CHROMA_API operator*(float lhs, const Chroma::XYZ &rhs);
 Chroma::XYZ CHROMA_API operator/(const Chroma::XYZ &lhs, float rhs);
 
-/* Simple containers to allow constructor overloading convenience and to enforce typing */
-struct CHROMA_API rgb {
+struct CHROMA_API rgb
+{
     float r, g, b;
     rgb(float R, float G, float B) : r(R), g(G), b(B){;}
 };
 
-struct CHROMA_API uv {
+struct CHROMA_API uv
+{
     float u, v;
     uv(float U, float V) : u(U), v(V){;}
     uv(const Chroma::XYZ &xyz);
 };
 
-struct CHROMA_API xyY {
+/* Is this a terrible idea? This is currently calculating CIE1960 du'v'. */
+float CHROMA_API operator-(const uv &lhs, const uv &rhs);
+
+struct CHROMA_API xyY
+{
     float x, y, Y=1;
     xyY(float xx, float yy, float YY=1) : x(xx), y(yy), Y(YY) {;}
     xyY(const Chroma::XYZ &xyz);
 };
 
-struct CHROMA_API UVW {
+/* Same for xyY -- there's no sensible reason to add/subtract chromaticities */
+float CHROMA_API operator-(const xyY &lhs, const xyY &rhs);
+
+struct CHROMA_API UVW
+{
     float U, V, W;
     UVW(float UU, float VV, float WW) : U(UU), V(VV), W(WW){;}
     UVW(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
 };
 
-struct CHROMA_API Lab {
+struct CHROMA_API Lab
+{
     float L, a, b;
     Lab(float LL, float aa, float bb) : L(LL), a(aa), b(bb){;}
     Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
