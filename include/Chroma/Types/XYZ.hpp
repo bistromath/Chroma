@@ -28,27 +28,7 @@ struct CHROMA_API XYZ {
     XYZ(const xyY &chrom);
     XYZ(const uv &chrom);
 //    XYZ(rgb &color, const Chroma::Transform &xform);
-    //TODO add constructors for UVW, Lab
-
-    /* CIE1931 chromaticity conversions */
-    float x(void) const;
-    float y(void) const;
-    Chroma::xyY xyY(void) const;
-
-    /* CIE1960 u', v' chromaticity conversions */
-    Chroma::uv uv(void) const;
-
-    /* CIE1964 UVW conversions */
-    Chroma::UVW UVW(const XYZ &whitepoint) const;
-
-    /* CIELAB conversions */
-    float L(const XYZ &whitepoint) const;
-    float a(const XYZ &whitepoint) const;
-    float b(const XYZ &whitepoint) const;
-    Chroma::Lab Lab(const XYZ &whitepoint) const;
-
-    /* RGB conversions */
-    //rgb_t rgb(const Chroma::Transform &transform);
+    //TODO add constructors for RGB, UVW, Lab
 
     float X, Y, Z;
 };
@@ -70,21 +50,25 @@ struct CHROMA_API rgb {
 struct CHROMA_API uv {
     float u, v;
     uv(float U, float V) : u(U), v(V){;}
+    uv(const Chroma::XYZ &xyz);
 };
 
 struct CHROMA_API xyY {
     float x, y, Y=1;
     xyY(float xx, float yy, float YY=1) : x(xx), y(yy), Y(YY) {;}
+    xyY(const Chroma::XYZ &xyz);
 };
 
 struct CHROMA_API UVW {
     float U, V, W;
     UVW(float UU, float VV, float WW) : U(UU), V(VV), W(WW){;}
+    UVW(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
 };
 
 struct CHROMA_API Lab {
     float L, a, b;
     Lab(float LL, float aa, float bb) : L(LL), a(aa), b(bb){;}
+    Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
 };
 
 }

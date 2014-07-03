@@ -43,53 +43,56 @@ Chroma::XYZ::XYZ(const Chroma::rgb &color, const Chroma::Transform &xform)
 }
 */
 
-Chroma::xyY Chroma::XYZ::xyY(void) const
+Chroma::xyY::xyY(const Chroma::XYZ &xyz)
 {
-    float sum = X+Y+Z;
-    if(sum < FLT_MIN) return Chroma::xyY{0,0,0};
-    return {X/sum, Y/sum, Y};
+    float sum = xyz.X+xyz.Y+xyz.Z;
+    if(sum < FLT_MIN) {
+        x=0;
+        y=0;
+        Y=0;
+    } else
+    {
+        x=xyz.X/sum;
+        y=xyz.Y/sum;
+        Y=xyz.Y;
+    }
 }
 
-float Chroma::XYZ::x(void) const
+Chroma::uv::uv(const Chroma::XYZ &xyz)
 {
-    return xyY().x;
+    float sum = xyz.X+15*xyz.Y+3*xyz.Z;
+    if(sum < FLT_MIN)
+    {
+        u=0;
+        v=0;
+    } else
+    {
+        u=4*xyz.X/sum;
+        v=6*xyz.Y/sum;
+    }
 }
 
-float Chroma::XYZ::y(void) const
+Chroma::UVW::UVW(const Chroma::XYZ &xyz, const XYZ &whitepoint)
 {
-    return xyY().y;
-}
-
-Chroma::uv Chroma::XYZ::uv(void) const
-{
-    float sum = X+15*Y+3*Z;
-    if(sum < FLT_MIN) return Chroma::uv(0, 0);
-    return {4*X/sum, 6*Y/sum};
-}
-
-Chroma::UVW Chroma::XYZ::UVW(const XYZ &whitepoint) const
-{
-    float W = 25*powf(Y,1.0f/3.0f)-17;
+    W = 25*powf(xyz.Y,1.0f/3.0f)-17;
     float tmp = 13*W;
-    auto my_uv = uv();
-    Chroma::uv whitepoint_uv = whitepoint.uv();
-    float U = tmp*(my_uv.u-whitepoint_uv.u);
-    float V = tmp*(my_uv.v-whitepoint_uv.v);
-    return {U,V,W};
+    Chroma::uv my_uv(xyz);
+    Chroma::uv whitepoint_uv(whitepoint);
+    U = tmp*(my_uv.u-whitepoint_uv.u);
+    V = tmp*(my_uv.v-whitepoint_uv.v);
 }
 
-Chroma::Lab Chroma::XYZ::Lab(const XYZ &whitepoint) const
+Chroma::Lab::Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint)
 {
     float sigma = 216.0f/24389.0f;
     float kappa = 24389.0f/27.0f;
     auto f = [&sigma, &kappa](float i) { if(i>sigma) return powf(i, 1.0f/3.0f); else return (kappa*i+16)/116; };
-    float x = f(X/whitepoint.X);
-    float y = f(Y/whitepoint.Y);
-    float z = f(Z/whitepoint.Z);
-    float L = 116*y - 16;
-    float a = 500*(x-y);
-    float b = 200*(y-z);
-    return {L,a,b};
+    float x = f(xyz.X/whitepoint.X);
+    float y = f(xyz.Y/whitepoint.Y);
+    float z = f(xyz.Z/whitepoint.Z);
+    L = 116*y - 16;
+    a = 500*(x-y);
+    b = 200*(y-z);
 }
 
 bool Chroma::operator==(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)

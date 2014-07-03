@@ -65,7 +65,7 @@ Chroma::xyY blackbody_chromaticity(float temp)
     float v = (0.317398726 + 4.22806245e-5*temp + 4.20481691e-8*(temp*temp))
             / (1 - 2.89741816e-5*temp + 1.61456053e-7*(temp*temp));
     Chroma::XYZ xyz(Chroma::uv(u,v));
-    return xyz.xyY();
+    return Chroma::xyY(xyz);
 }
 
 } /* namespace Chroma */
