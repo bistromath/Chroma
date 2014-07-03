@@ -1,6 +1,7 @@
 #include <Chroma/Chroma.hpp>
 #include <Chroma/Data/StandardIlluminants.hpp>
 #include <stdexcept>
+#include <algorithm>
 #include <cmath>
 
 namespace Chroma {
@@ -15,7 +16,7 @@ Chroma::xyY D_illuminant_chromaticity(float cct)
     float xd;
     if(cct <= 7000)
     {
-        xd = 0.244603 + 0.09911e3/cct + 2.9678e6/(cct*cct) - 4.6070e9/(cct*cct*cct);
+        xd = 0.244063 + 0.09911e3/cct + 2.9678e6/(cct*cct) - 4.6070e9/(cct*cct*cct);
     }
     else
     {
@@ -34,6 +35,22 @@ Chroma::spd D_illuminant(float cct)
     float M2 = (0.0300 - 31.4424*chrom.x + 30.0717*chrom.y) / M;
 
     return D_illuminant_S0 + D_illuminant_S1*M1 + D_illuminant_S2*M2;
+}
+
+Chroma::spd blackbody(float temp, std::vector<float> wavelengths)
+{
+    const float h = 6.626070e-34;   /* Planck's constant */
+    const float c = 299792458.0;     /* speed of light */
+    const float k = 1.380648e-23;   /* Boltzmann's constant */
+
+    auto I = [&h, &c, &k, &temp](float wavelength)
+    {
+        float nm = wavelength * 1e-9;
+        return ((2*M_PI*h*(c*c))/(powf(nm,5)))*(1.0/(expf((h*c/nm)/(k*temp))-1.0));
+    };
+    std::vector<float> powers(wavelengths.size());
+    std::transform(wavelengths.begin(), wavelengths.end(), powers.begin(), I);
+    return {wavelengths, powers};
 }
 
 } /* namespace Chroma */
