@@ -37,6 +37,11 @@ Chroma::spd D_illuminant(float cct)
     return D_illuminant_S0 + D_illuminant_S1*M1 + D_illuminant_S2*M2;
 }
 
+Chroma::spd E_illuminant(void)
+{
+    return {{350,850},{1,1}};
+}
+
 Chroma::spd blackbody(float temp, std::vector<float> wavelengths)
 {
     const float h = 6.626070e-34;   /* Planck's constant */
