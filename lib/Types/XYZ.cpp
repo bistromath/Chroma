@@ -92,29 +92,34 @@ Chroma::Lab Chroma::XYZ::Lab(const XYZ &whitepoint) const
     return {L,a,b};
 }
 
-bool Chroma::XYZ::operator==(const Chroma::XYZ &other)
+bool Chroma::operator==(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
 {
-    return (X==other.X)
-        && (Y==other.Y)
-        && (Z==other.Z);
+    return (lhs.X==rhs.X)
+        && (lhs.Y==rhs.Y)
+        && (lhs.Z==rhs.Z);
 }
 
-Chroma::XYZ Chroma::XYZ::operator+(const Chroma::XYZ &other)
+Chroma::XYZ Chroma::operator+(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
 {
-    return {X+other.X, Y+other.Y, Z+other.Z};
+    return {lhs.X+rhs.X, lhs.Y+rhs.Y, lhs.Z+rhs.Z};
 }
 
-Chroma::XYZ Chroma::XYZ::operator-(const Chroma::XYZ &other)
+Chroma::XYZ Chroma::operator-(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
 {
-    return {X-other.X, Y-other.Y, Z-other.Z};
+    return {lhs.X-rhs.X, lhs.Y-rhs.Y, lhs.Z-rhs.Z};
 }
 
-Chroma::XYZ Chroma::XYZ::operator*(const float other)
+Chroma::XYZ Chroma::operator*(const Chroma::XYZ &lhs, float rhs)
 {
-    return {X*other, Y*other, Z*other};
+    return {lhs.X*rhs, lhs.Y*rhs, lhs.Z*rhs};
 }
 
-Chroma::XYZ Chroma::XYZ::operator/(const float other)
+Chroma::XYZ Chroma::operator*(float lhs, const Chroma::XYZ &rhs)
 {
-    return {X/other, Y/other, Z/other};
+    return rhs*lhs;
+}
+
+Chroma::XYZ Chroma::operator/(const Chroma::XYZ &lhs, float rhs)
+{
+    return {lhs.X/rhs, lhs.Y/rhs, lhs.Z/rhs};
 }

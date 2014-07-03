@@ -20,6 +20,8 @@ struct UVW;
 struct Lab;
 struct rgb;
 
+/* TODO: move operators outside the class, and add uv differencing (dUV) */
+
 struct CHROMA_API XYZ {
     /* Constructors */
     XYZ(float x, float y, float z);
@@ -48,15 +50,16 @@ struct CHROMA_API XYZ {
     /* RGB conversions */
     //rgb_t rgb(const Chroma::Transform &transform);
 
-    /* Operators */
-    bool operator==(const XYZ &other);
-    XYZ operator+(const XYZ &other);
-    XYZ operator-(const XYZ &other);
-    XYZ operator*(const float other);
-    XYZ operator/(const float other);
-
     float X, Y, Z;
 };
+
+/* Operators */
+bool CHROMA_API operator==(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs);
+Chroma::XYZ CHROMA_API operator+(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs);
+Chroma::XYZ CHROMA_API operator-(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs);
+Chroma::XYZ CHROMA_API operator*(const Chroma::XYZ &lhs, float rhs);
+Chroma::XYZ CHROMA_API operator*(float lhs, const Chroma::XYZ &rhs);
+Chroma::XYZ CHROMA_API operator/(const Chroma::XYZ &lhs, float rhs);
 
 /* Simple containers to allow constructor overloading convenience and to enforce typing */
 struct CHROMA_API rgb {
