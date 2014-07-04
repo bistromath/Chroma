@@ -19,7 +19,7 @@
 #include <Chroma/Config.hpp>
 #include <vector>
 #include <string>
-#include <Chroma/Types/XYZ.hpp>
+#include <Chroma/Types/Chromaticity.hpp>
 
 namespace Chroma {
 
