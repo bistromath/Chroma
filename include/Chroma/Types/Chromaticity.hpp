@@ -14,7 +14,8 @@
  */
 
 #pragma once
-#include <Chroma/Chroma.hpp>
+#include <Chroma/Config.hpp>
+#include <Chroma/Types/Chromaticity.hpp>
 #include <Chroma/Data/Transforms.hpp>
 
 namespace Chroma {
@@ -25,8 +26,6 @@ struct uv;
 struct UVW;
 struct Lab;
 struct rgb;
-
-/* TODO: add u'v' differencing */
 
 struct CHROMA_API XYZ {
     /* Constructors */
@@ -58,6 +57,7 @@ struct CHROMA_API uv
     float u, v;
     uv(float U, float V) : u(U), v(V){;}
     uv(const Chroma::XYZ &xyz);
+    uv(const Chroma::xyY &xy);
 };
 
 /* Is this a terrible idea? This is currently calculating CIE1960 du'v'. */
@@ -80,6 +80,8 @@ struct CHROMA_API UVW
     UVW(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
 };
 
+float CHROMA_API operator-(const UVW &lhs, const UVW &rhs);
+
 struct CHROMA_API Lab
 {
     float L, a, b;
@@ -87,4 +89,4 @@ struct CHROMA_API Lab
     Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
 };
 
-}
+} /* namespace Chroma */

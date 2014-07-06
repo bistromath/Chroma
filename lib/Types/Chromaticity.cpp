@@ -6,7 +6,7 @@
 // COPYING file, or online at http://www.gnu.org/licenses/gpl.html.
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#include <Chroma/Chroma.hpp>
+#include <Chroma/Types/Chromaticity.hpp>
 #include <cfloat>
 #include <cmath>
 
@@ -76,7 +76,7 @@ float Chroma::operator-(const Chroma::xyY &lhs, const Chroma::xyY &rhs)
 {
     float dx = lhs.x - rhs.x;
     float dy = lhs.y - rhs.y;
-    return {sqrtf((dx*dx)+(dy*dy))};
+    return sqrtf(dx*dx+dy*dy);
 }
 
 Chroma::uv::uv(const Chroma::XYZ &xyz)
@@ -93,11 +93,25 @@ Chroma::uv::uv(const Chroma::XYZ &xyz)
     }
 }
 
+Chroma::uv::uv(const Chroma::xyY &xy)
+{
+    float sum = 12*xy.y - 2*xy.x + 3;
+    if(sum < FLT_MIN)
+    {
+        u=0;
+        v=0;
+    } else
+    {
+        u=4*xy.x / sum;
+        v=6*xy.y / sum;
+    }
+}
+
 float Chroma::operator-(const Chroma::uv &lhs, const Chroma::uv &rhs)
 {
     float du = lhs.u - rhs.u;
     float dv = lhs.v - rhs.v;
-    return {sqrtf((du*du)+(dv*dv))};
+    return sqrtf(du*du+dv*dv);
 }
 
 Chroma::UVW::UVW(const Chroma::XYZ &xyz, const XYZ &whitepoint)
@@ -108,6 +122,14 @@ Chroma::UVW::UVW(const Chroma::XYZ &xyz, const XYZ &whitepoint)
     Chroma::uv whitepoint_uv(whitepoint);
     U = tmp*(my_uv.u-whitepoint_uv.u);
     V = tmp*(my_uv.v-whitepoint_uv.v);
+}
+
+float Chroma::operator-(const Chroma::UVW &lhs, const Chroma::UVW &rhs)
+{
+    float dU = lhs.U - rhs.U;
+    float dV = lhs.V - rhs.V;
+    float dW = lhs.W - rhs.W;
+    return sqrtf(dU*dU+dV*dV+dW*dW);
 }
 
 Chroma::Lab::Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint)

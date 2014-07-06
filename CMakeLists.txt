@@ -39,5 +39,5 @@ include(ChromaStandardFlags)
 
 add_subdirectory(include)
 add_subdirectory(lib)
-#add_subdirectory(doc)
+add_subdirectory(doc)
 add_subdirectory(test)

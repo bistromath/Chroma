@@ -11,3 +11,4 @@
 #include "Types/spd.hpp"
 #include "Types/Chromaticity.hpp"
 #include "Types/Transform.hpp"
+#include "Analysis/CCT.hpp"

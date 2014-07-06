@@ -25,8 +25,9 @@ list(APPEND CHROMA_SOURCES
     Types/spd.cpp
     Types/Chromaticity.cpp
     Data/StandardIlluminants.cpp
-    #rgbw.cpp
-    #cri.cpp
+    Analysis/CRI.cpp
+    Analysis/CCT.cpp
+    #    Analysis/CQS.cpp
 )
 
 add_library(Chroma SHARED ${CHROMA_SOURCES})

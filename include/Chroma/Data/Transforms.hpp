@@ -6,7 +6,7 @@
 // COPYING file, or online at http://www.gnu.org/licenses/gpl.html.
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#include <Chroma/Chroma.hpp>
+//#include <Chroma/Chroma.hpp>
 
 namespace Chroma {
 //TODO: represent common transforms in your favorite matrix library (Euler?)

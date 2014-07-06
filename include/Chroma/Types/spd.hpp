@@ -17,9 +17,9 @@
 
 #pragma once
 #include <Chroma/Config.hpp>
+#include <Chroma/Types/Chromaticity.hpp>
 #include <vector>
 #include <string>
-#include <Chroma/Types/Chromaticity.hpp>
 
 namespace Chroma {
 
