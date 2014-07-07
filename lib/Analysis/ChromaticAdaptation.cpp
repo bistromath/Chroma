@@ -3,7 +3,10 @@
 #include <eigen3/Eigen/Dense>
 
 /* TODO: There is definitely a better way to do this */
-Chroma::XYZ Chroma::chromatic_adaptation(const Chroma::XYZ &color, const Chroma::XYZ &from, const Chroma::XYZ &to, const std::vector<float> &adaptation)
+Chroma::XYZ Chroma::chromatic_adaptation(const Chroma::XYZ &color,
+                                         const Chroma::XYZ &from,
+                                         const Chroma::XYZ &to,
+                                         const std::vector<float> &adaptation=Chroma::BradfordAdaptation)
 {
     Eigen::Vector3f src;
     src << from.X, from.Y, from.Z;
