@@ -27,8 +27,10 @@ list(APPEND CHROMA_SOURCES
     Data/StandardIlluminants.cpp
     Analysis/CRI.cpp
     Analysis/CCT.cpp
+    Analysis/ChromaticAdaptation.cpp
     #    Analysis/CQS.cpp
 )
+
 
 add_library(Chroma SHARED ${CHROMA_SOURCES})
 target_link_libraries(Chroma ${CHROMA_LIBRARIES})

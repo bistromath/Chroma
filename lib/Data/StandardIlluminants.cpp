@@ -12,9 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace Chroma {
-
-Chroma::xyY D_illuminant_chromaticity(float cct)
+Chroma::xyY Chroma::D_illuminant_chromaticity(float cct)
 {
     if(cct < 4000 or cct > 25000)
     {
@@ -35,7 +33,7 @@ Chroma::xyY D_illuminant_chromaticity(float cct)
     return Chroma::xyY(xd, yd);
 }
 
-Chroma::spd D_illuminant(float cct)
+Chroma::spd Chroma::D_illuminant(float cct)
 {
     Chroma::xyY chrom = D_illuminant_chromaticity(cct);
     float M = 0.0241 + 0.2562*chrom.x - 0.7341*chrom.y;
@@ -45,12 +43,12 @@ Chroma::spd D_illuminant(float cct)
     return D_illuminant_S0 + D_illuminant_S1*M1 + D_illuminant_S2*M2;
 }
 
-Chroma::spd E_illuminant(void)
+Chroma::spd Chroma::E_illuminant(void)
 {
     return {{350,850},{1,1}};
 }
 
-Chroma::spd blackbody(float temp, std::vector<float> wavelengths)
+Chroma::spd Chroma::blackbody(float temp, std::vector<float> wavelengths)
 {
     const float h = 6.626070e-34;   /* Planck's constant */
     const float c = 299792458;      /* speed of light */
@@ -66,7 +64,7 @@ Chroma::spd blackbody(float temp, std::vector<float> wavelengths)
     return {wavelengths, powers};
 }
 
-Chroma::xyY blackbody_chromaticity(float temp)
+Chroma::xyY Chroma::blackbody_chromaticity(float temp)
 {
     float u = (0.860117757 + 1.54118254e-4*temp + 1.28641212e-7*(temp*temp))
             / (1 + 8.42420235e-4*temp + 7.08145163e-7*(temp*temp));
@@ -76,4 +74,7 @@ Chroma::xyY blackbody_chromaticity(float temp)
     return Chroma::xyY(xyz);
 }
 
-} /* namespace Chroma */
+Chroma::spd Chroma::A_illuminant(void)
+{
+    return Chroma::blackbody(2856, Chroma::F4_illuminant.wavelengths()); /* TODO FIXME */
+}

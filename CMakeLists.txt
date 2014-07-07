@@ -36,6 +36,7 @@ include(ChromaStandardFlags)
 
 #Check for Euler library (or whatever you end up using)
 #TODO
+add_definitions(-DEIGEN_MATRIX_PLUGIN="Chroma/Matrix_initializer_list.h")
 
 add_subdirectory(include)
 add_subdirectory(lib)

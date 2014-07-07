@@ -12,6 +12,7 @@
 
 namespace Chroma {
 
+Chroma::spd CHROMA_API A_illuminant(void);
 Chroma::xyY CHROMA_API D_illuminant_chromaticity(float cct);
 Chroma::spd CHROMA_API D_illuminant(float cct);
 Chroma::spd CHROMA_API E_illuminant(void);
