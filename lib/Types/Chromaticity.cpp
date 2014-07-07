@@ -162,27 +162,54 @@ bool Chroma::operator==(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
         && (lhs.Z==rhs.Z);
 }
 
-Chroma::XYZ Chroma::operator+(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
+Chroma::XYZ &Chroma::XYZ::operator+=(const Chroma::XYZ &rhs)
 {
-    return {lhs.X+rhs.X, lhs.Y+rhs.Y, lhs.Z+rhs.Z};
+    X+=rhs.X;
+    Y+=rhs.Y;
+    Z+=rhs.Z;
+    return *this;
 }
 
-Chroma::XYZ Chroma::operator-(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
+Chroma::XYZ &Chroma::XYZ::operator-=(const Chroma::XYZ &rhs)
 {
-    return {lhs.X-rhs.X, lhs.Y-rhs.Y, lhs.Z-rhs.Z};
+    X-=rhs.X;
+    Y-=rhs.Y;
+    Z-=rhs.Z;
+    return *this;
 }
 
-Chroma::XYZ Chroma::operator*(const Chroma::XYZ &lhs, float rhs)
+Chroma::XYZ &Chroma::XYZ::operator*=(float rhs)
 {
-    return {lhs.X*rhs, lhs.Y*rhs, lhs.Z*rhs};
+    X*=rhs;
+    Y*=rhs;
+    Z*=rhs;
+    return *this;
 }
 
-Chroma::XYZ Chroma::operator*(float lhs, const Chroma::XYZ &rhs)
+Chroma::XYZ &Chroma::XYZ::operator/=(float rhs)
 {
-    return rhs*lhs;
+    X/=rhs;
+    Y/=rhs;
+    Z/=rhs;
+    return *this;
 }
 
-Chroma::XYZ Chroma::operator/(const Chroma::XYZ &lhs, float rhs)
+Chroma::XYZ Chroma::operator+(Chroma::XYZ lhs, const Chroma::XYZ &rhs)
 {
-    return {lhs.X/rhs, lhs.Y/rhs, lhs.Z/rhs};
+    return lhs+=rhs;
+}
+
+Chroma::XYZ Chroma::operator-(Chroma::XYZ lhs, const Chroma::XYZ &rhs)
+{
+    return lhs-=rhs;
+}
+
+Chroma::XYZ Chroma::operator*(Chroma::XYZ lhs, float rhs)
+{
+    return lhs*=rhs;
+}
+
+Chroma::XYZ Chroma::operator/(Chroma::XYZ lhs, float rhs)
+{
+    return lhs/=rhs;
 }

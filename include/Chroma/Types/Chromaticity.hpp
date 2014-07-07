@@ -37,16 +37,20 @@ struct CHROMA_API XYZ {
 //    XYZ(rgb &color, const Chroma::Transform &xform);
     //TODO add constructors for RGB, UVW, Lab
 
+    XYZ &operator+=(const XYZ &rhs);
+    XYZ &operator-=(const XYZ &rhs);
+    XYZ &operator*=(float rhs);
+    XYZ &operator/=(float rhs);
+
     float X, Y, Z;
 };
 
 /* Operators */
 bool CHROMA_API operator==(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs);
-Chroma::XYZ CHROMA_API operator+(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs);
-Chroma::XYZ CHROMA_API operator-(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs);
-Chroma::XYZ CHROMA_API operator*(const Chroma::XYZ &lhs, float rhs);
-Chroma::XYZ CHROMA_API operator*(float lhs, const Chroma::XYZ &rhs);
-Chroma::XYZ CHROMA_API operator/(const Chroma::XYZ &lhs, float rhs);
+Chroma::XYZ CHROMA_API operator+(Chroma::XYZ lhs, const Chroma::XYZ &rhs);
+Chroma::XYZ CHROMA_API operator-(Chroma::XYZ lhs, const Chroma::XYZ &rhs);
+Chroma::XYZ CHROMA_API operator*(Chroma::XYZ lhs, float rhs);
+Chroma::XYZ CHROMA_API operator/(Chroma::XYZ lhs, float rhs);
 
 struct CHROMA_API rgb
 {
