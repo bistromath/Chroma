@@ -34,9 +34,9 @@ set(CMAKE_MODULE_PATH ${CHROMA_MODULE_PATH})
 
 include(ChromaStandardFlags)
 
-#Check for Euler library (or whatever you end up using)
-#TODO
-add_definitions(-DEIGEN_MATRIX_PLUGIN="Chroma/Matrix_initializer_list.h")
+#Check for Eigenlibrary (or whatever you end up using)
+find_package(Eigen3 REQUIRED)
+include_directories(EIGEN3_INCLUDE_DIR)
 
 add_subdirectory(include)
 add_subdirectory(lib)
