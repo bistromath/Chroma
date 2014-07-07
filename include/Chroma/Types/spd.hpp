@@ -17,7 +17,6 @@
 
 #pragma once
 #include <Chroma/Config.hpp>
-#include <Chroma/Types/Chromaticity.hpp>
 #include <vector>
 #include <string>
 
@@ -38,8 +37,16 @@ public:
     spd& operator=(const spd &other);
     spd& operator=(spd &&other);
 
+    /* Unary operators */
+    spd &operator+=(const spd &rhs);
+    spd &operator-=(const spd &rhs);
+    spd &operator*=(const spd &rhs);
+    spd &operator/=(const spd &rhs);
+    spd &operator*=(const float rhs);
+    spd &operator/=(const float rhs);
+
     /* Type conversions */
-    Chroma::XYZ XYZ() const;
+//    Chroma::XYZ XYZ() const; /* TODO deprecate */
     float lumens() const;
     float sum() const;
 
@@ -65,12 +72,13 @@ private:
 Chroma::spd spd_arithmetic(const Chroma::spd &lhs, const Chroma::spd &rhs, std::string operation);
 bool CHROMA_API operator==(const Chroma::spd &lhs, const Chroma::spd &rhs);
 bool CHROMA_API operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs);
-Chroma::spd CHROMA_API operator+(const Chroma::spd &lhs, const Chroma::spd &rhs);
-Chroma::spd CHROMA_API operator-(const Chroma::spd &lhs, const Chroma::spd &rhs);
-Chroma::spd CHROMA_API operator*(const Chroma::spd &lhs, const Chroma::spd &rhs);
-Chroma::spd CHROMA_API operator/(const Chroma::spd &lhs, const Chroma::spd &rhs);
-Chroma::spd CHROMA_API operator*(const Chroma::spd &lhs, float rhs);
-Chroma::spd CHROMA_API operator*(float lhs, const Chroma::spd &rhs);
-Chroma::spd CHROMA_API operator/(const Chroma::spd &lhs, float rhs);
+Chroma::spd CHROMA_API operator+(Chroma::spd lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator+(const Chroma::spd &lhs, Chroma::spd &&rhs);
+Chroma::spd CHROMA_API operator-(Chroma::spd lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator*(Chroma::spd lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator*(const Chroma::spd &lhs, Chroma::spd &&rhs);
+Chroma::spd CHROMA_API operator/(Chroma::spd lhs, const Chroma::spd &rhs);
+Chroma::spd CHROMA_API operator*(Chroma::spd lhs, float rhs);
+Chroma::spd CHROMA_API operator/(Chroma::spd lhs, float rhs);
 
 } //namespace Chroma

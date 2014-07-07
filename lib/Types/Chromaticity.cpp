@@ -7,6 +7,8 @@
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #include <Chroma/Types/Chromaticity.hpp>
+#include <Chroma/Types/spd.hpp>
+#include <Chroma/Data/StandardObservers.hpp>
 #include <cfloat>
 #include <cmath>
 
@@ -23,6 +25,7 @@ inline float clip(float val, float min, float max)
 }
 
 Chroma::XYZ::XYZ(float x, float y, float z) : X(x), Y(y), Z(z) {;}
+
 Chroma::XYZ::XYZ(const Chroma::xyY &chrom)
 {
     clip(chrom.x, FLT_MIN, 1);
@@ -48,6 +51,13 @@ Chroma::XYZ::XYZ(const Chroma::uv &chrom)
     X = wat.X;
     Y = wat.Y;
     Z = wat.Z;
+}
+
+Chroma::XYZ::XYZ(const Chroma::spd &s)
+{
+    X = (s*(Chroma::CIE1931_X)).sum();
+    Y = (s*(Chroma::CIE1931_Y)).sum();
+    Z = (s*(Chroma::CIE1931_Z)).sum();
 }
 
 /*

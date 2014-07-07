@@ -16,6 +16,7 @@
 #pragma once
 #include <Chroma/Config.hpp>
 #include <Chroma/Types/Chromaticity.hpp>
+#include <Chroma/Types/spd.hpp>
 #include <Chroma/Data/Transforms.hpp>
 
 namespace Chroma {
@@ -32,6 +33,7 @@ struct CHROMA_API XYZ {
     XYZ(float x, float y, float z);
     XYZ(const xyY &chrom);
     XYZ(const uv &chrom);
+    XYZ(const Chroma::spd &s);
 //    XYZ(rgb &color, const Chroma::Transform &xform);
     //TODO add constructors for RGB, UVW, Lab
 
