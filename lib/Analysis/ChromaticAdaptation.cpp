@@ -6,7 +6,7 @@
 Chroma::XYZ Chroma::chromatic_adaptation(const Chroma::XYZ &color,
                                          const Chroma::XYZ &from,
                                          const Chroma::XYZ &to,
-                                         const std::vector<float> &adaptation=Chroma::BradfordAdaptation)
+                                         const std::vector<float> &adaptation=Chroma::BradfordTransform)
 {
     Eigen::Vector3f src;
     src << from.X, from.Y, from.Z;

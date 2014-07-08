@@ -12,16 +12,12 @@
 
 #include <Chroma/Chroma.hpp>
 #include <Chroma/Data/StandardIlluminants.hpp>
-#include <Chroma/Analysis/ChromaticAdaptation.hpp>
+#include <Chroma/Analysis/CRI.hpp>
 
-BOOST_AUTO_TEST_CASE(test_chromatic_adaptation)
+BOOST_AUTO_TEST_CASE(test_cri)
 {
-    Chroma::XYZ a_illum(1.0985, 1.00, 0.3558);
-    Chroma::XYZ c_illum(0.98074, 1.0000, 1.18232);
-    Chroma::XYZ ccred(0.315756, 0.162732, 0.015905);
-    Chroma::XYZ result = Chroma::chromatic_adaptation(ccred, a_illum, c_illum, Chroma::BradfordTransform);
-    std::cout << "X: " << result.X << " Y: " << result.Y << " Z: " << result.Z << std::endl;
-    float error = Chroma::uv(result) - Chroma::uv(c_illum);
-    std::cout << "Error: " << error << std::endl;
-    BOOST_CHECK(error < 0.25);
+    float cri = Chroma::CRI(Chroma::F4_illuminant);
+    BOOST_CHECK_CLOSE(cri, 51, 1);
+    cri = Chroma::CRI(Chroma::D_illuminant(6500));
+    BOOST_CHECK_CLOSE(cri, 100, 0.1);
 }

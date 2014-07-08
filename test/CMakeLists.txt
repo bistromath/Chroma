@@ -33,6 +33,7 @@ set(test_sources
     test_std_illum.cpp
     test_cct.cpp
     test_chromatic_adaptation.cpp
+    test_cri.cpp
 )
 
 include_directories(${CHROMA_INCLUDE_DIRS})
