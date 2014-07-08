@@ -218,7 +218,7 @@ Chroma::spd Chroma::spd::reshape(const std::vector<float> &new_wavelengths) cons
 
     if(new_wavelengths[0] < _wavelengths[0] or new_wavelengths[new_wavelengths.size()-1] > _wavelengths[_wavelengths.size()-1])
     {
-        std::cerr << "Chroma::reshape: Warning: Attempting to interpolate outside dataset. Some bins will be set to zero." << std::endl;
+//        std::cerr << "Chroma::reshape: Warning: Attempting to interpolate outside dataset. Some bins will be set to zero." << std::endl;
     }
 
     /* Do the actual interpolation */
