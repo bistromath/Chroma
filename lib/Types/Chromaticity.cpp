@@ -47,10 +47,7 @@ Chroma::XYZ::XYZ(const Chroma::uv &chrom)
     }
     float x = 3*chrom.u / tmp;
     float y = 2*chrom.v / tmp;
-    Chroma::XYZ wat(Chroma::xyY(x,y)); //FIXME why do i have to do this arrgghh
-    X = wat.X;
-    Y = wat.Y;
-    Z = wat.Z;
+    *this = Chroma::xyY(x,y);
 }
 
 Chroma::XYZ::XYZ(const Chroma::spd &s)
