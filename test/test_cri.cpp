@@ -18,6 +18,8 @@ BOOST_AUTO_TEST_CASE(test_cri)
 {
     float cri = Chroma::CRI(Chroma::F4_illuminant);
     BOOST_CHECK_CLOSE(cri, 51, 1);
+    cri = Chroma::CRI(Chroma::A_illuminant());
+    BOOST_CHECK_CLOSE(cri, 100, 0.1);
     cri = Chroma::CRI(Chroma::D_illuminant(6500));
     BOOST_CHECK_CLOSE(cri, 100, 0.1);
     cri = Chroma::CRI(Chroma::F5_illuminant);

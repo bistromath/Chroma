@@ -50,9 +50,9 @@ Chroma::spd Chroma::E_illuminant(void)
 
 Chroma::spd Chroma::blackbody(float temp, std::vector<float> wavelengths)
 {
-    const float h = 6.626070e-34;   /* Planck's constant */
+    const float h = 6.62606957e-34;   /* Planck's constant */
     const float c = 299792458;      /* speed of light */
-    const float k = 1.380648e-23;   /* Boltzmann's constant */
+    const float k = 1.3806488e-23;   /* Boltzmann's constant */
 
     auto I = [&h, &c, &k, &temp](float wavelength)
     {

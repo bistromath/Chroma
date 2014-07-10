@@ -40,6 +40,8 @@ float Chroma::CRI(Chroma::spd spec)
     std::vector<Chroma::spd> TCS = {Chroma::CRI_TCS01, Chroma::CRI_TCS02, Chroma::CRI_TCS03, Chroma::CRI_TCS04,
                                     Chroma::CRI_TCS05, Chroma::CRI_TCS06, Chroma::CRI_TCS07, Chroma::CRI_TCS08};
 
+    auto transform = Chroma::calculate_chromatic_adaptation_transform(spec_xyz, ref_xyz, Chroma::VonKriesTransform);
+
     std::vector<float> cri_results(8);
     for( size_t index=0; index<TCS.size(); ++index )
     {
@@ -47,8 +49,8 @@ float Chroma::CRI(Chroma::spd spec)
         Chroma::XYZ ref_illum(ref_spd * TCS[index]);
         Chroma::XYZ test_illum(spec * TCS[index]);
         /* Chromatically adapt the test result to the reference illuminant */
-        Chroma::XYZ test_illum_chrom = Chroma::chromatic_adaptation(test_illum, spec_xyz, ref_xyz, Chroma::VonKriesTransform);
-        /* Get the CIE1960 delta-E distance between the two */
+        Chroma::XYZ test_illum_chrom = Chroma::apply_chromatic_adaptation_transform(test_illum, transform);
+        /* Get the CIE1964 delta-E distance between the two */
         Chroma::UVW ref_uvw(ref_illum, test_illum);
         Chroma::UVW test_uvw(test_illum_chrom, test_illum);
         float dE = test_uvw - ref_uvw;

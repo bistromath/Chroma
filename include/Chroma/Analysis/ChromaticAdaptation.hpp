@@ -9,5 +9,7 @@ const std::vector<float> VonKriesTransform { 0.40024, -0.2263, 0.0, 0.7076, 1.16
 const std::vector<float> CIECAT02Transform { 0.7328, -0.7036, 0.0030, 0.4296, 1.6975, 0.0136, -0.1624, 0.0061, 0.9834 };
 
 Chroma::XYZ CHROMA_API chromatic_adaptation(const Chroma::XYZ &color, const Chroma::XYZ &from, const Chroma::XYZ &to, const std::vector<float> &adaptation);
+Eigen::Matrix3f CHROMA_API calculate_chromatic_adaptation_transform(const Chroma::XYZ &from, const Chroma::XYZ &to, const std::vector<float> &adaptation);
+Chroma::XYZ CHROMA_API apply_chromatic_adaptation_transform(const Chroma::XYZ &color, const Eigen::Matrix3f &transform);
 
 } /* namespace Chroma */
