@@ -105,7 +105,7 @@ Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, s
     {
         /* we're going to reshape to match the one with the best resolution. */
         float lhsstep = l.wavelengths()[1]-l.wavelengths()[0];
-        float rhsstep = r.wavelengths()[1] - r.wavelengths()[0];
+        float rhsstep = r.wavelengths()[1]-r.wavelengths()[0];
         if(lhsstep < rhsstep)
         {
             lhs = &l;

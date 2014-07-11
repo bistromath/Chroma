@@ -152,6 +152,30 @@ Chroma::Lab::Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint)
     b = 200*(y-z);
 }
 
+Chroma::Luv::Luv(const Chroma::XYZ &color, const Chroma::XYZ &whitepoint)
+{
+    float Yquot = color.Y/whitepoint.Y;
+    if(Yquot <= 0.008856451679035631)
+    {
+        L = 903.296 * Yquot;
+    } else
+    {
+        L = 116*powf(Yquot, 1.0/3.0) - 16.0;
+    }
+    Chroma::uv uv_c(color);
+    Chroma::uv uv_w(whitepoint);
+    u = 13*L*(uv_c.u - uv_w.u);
+    v = 13*L*(uv_c.v - uv_c.v);
+}
+
+float Chroma::operator-(const Chroma::Luv &lhs, const Chroma::Luv &rhs)
+{
+    float dL = lhs.L - rhs.L;
+    float du = lhs.u - rhs.u;
+    float dv = lhs.v - rhs.v;
+    return sqrtf(dL*dL+du*du+dv*dv);
+}
+
 bool Chroma::operator==(const Chroma::XYZ &lhs, const Chroma::XYZ &rhs)
 {
     return (lhs.X==rhs.X)

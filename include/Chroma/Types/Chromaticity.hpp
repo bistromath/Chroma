@@ -27,6 +27,7 @@ struct uv;
 struct UVW;
 struct Lab;
 struct rgb;
+struct Luv;
 
 struct CHROMA_API XYZ {
     /* Constructors */
@@ -58,6 +59,7 @@ struct CHROMA_API rgb
     rgb(float R, float G, float B) : r(R), g(G), b(B){;}
 };
 
+/* CIE 1960 UCS */
 struct CHROMA_API uv
 {
     float u, v;
@@ -69,6 +71,7 @@ struct CHROMA_API uv
 /* Is this a terrible idea? This is currently calculating CIE1960 du'v'. */
 float CHROMA_API operator-(const uv &lhs, const uv &rhs);
 
+/* CIE 1931 chromaticity */
 struct CHROMA_API xyY
 {
     float x, y, Y=1;
@@ -79,6 +82,7 @@ struct CHROMA_API xyY
 /* Same for xyY -- there's no sensible reason to add/subtract chromaticities */
 float CHROMA_API operator-(const xyY &lhs, const xyY &rhs);
 
+/* CIE 1964 UCS */
 struct CHROMA_API UVW
 {
     float U, V, W;
@@ -88,11 +92,22 @@ struct CHROMA_API UVW
 
 float CHROMA_API operator-(const UVW &lhs, const UVW &rhs);
 
+/* CIE 1976 CIELAB UCS */
 struct CHROMA_API Lab
 {
     float L, a, b;
     Lab(float LL, float aa, float bb) : L(LL), a(aa), b(bb){;}
     Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
 };
+
+/* CIE 1976 CIELUV UCS */
+struct CHROMA_API Luv
+{
+    float L, u, v;
+    Luv(float LL, float uu, float vv) : L(LL), u(uu), v(vv){;}
+    Luv(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint);
+};
+
+float CHROMA_API operator-(const Luv &lhs, const Luv &rhs);
 
 } /* namespace Chroma */

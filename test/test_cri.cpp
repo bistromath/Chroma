@@ -23,5 +23,5 @@ BOOST_AUTO_TEST_CASE(test_cri)
     cri = Chroma::CRI(Chroma::D_illuminant(6500));
     BOOST_CHECK_CLOSE(cri, 100, 0.1);
     cri = Chroma::CRI(Chroma::F5_illuminant);
-    BOOST_CHECK_CLOSE(cri, 72, 1);
+    BOOST_CHECK_CLOSE(cri, 72, 2);
 }
