@@ -42,40 +42,62 @@ Chroma::spd::spd(const std::vector<float> &wavelengths, const std::vector<float>
             throw std::runtime_error("Wavelength array must be monotonically increasing.");
         }
     }
-    _wavelengths = wavelengths;
+    _wavelength_start = wavelengths[0];
+    _wavelength_stop = wavelengths[wavelengths.size()-1];
+    _wavelength_step = wave_spacing;
     _powers = powers;
 }
 
+Chroma::spd::spd(float wavelength_start, float wavelength_step, const std::vector<float> &powers)
+    : _wavelength_start(wavelength_start),
+      _wavelength_stop(wavelength_start+powers.size()*wavelength_step),
+      _wavelength_step(wavelength_step),
+      _powers(powers)
+{
+}
+
 Chroma::spd::spd(const Chroma::spd &other)
-    : _wavelengths(other.wavelengths()),
+    : _wavelength_start(other.wavelength_start()),
+      _wavelength_stop(other.wavelength_stop()),
+      _wavelength_step(other.wavelength_step()),
       _powers(other.powers())
 {
 }
 
 /* TODO: find out if STL will automatically move rvalues in the copy constructor */
 Chroma::spd::spd(Chroma::spd &&other)
-    : _wavelengths(std::move(other.wavelengths())),
+    : _wavelength_start(std::move(other.wavelength_start())),
+      _wavelength_stop(std::move(other.wavelength_stop())),
+      _wavelength_step(std::move(other.wavelength_step())),
       _powers(std::move(other.powers()))
 {
 }
 
 Chroma::spd& Chroma::spd::operator=(const spd &other)
 {
-    _wavelengths = other.wavelengths();
+    _wavelength_start = other.wavelength_start();
+    _wavelength_stop = other.wavelength_stop();
+    _wavelength_step = other.wavelength_step();
     _powers = other.powers();
     return *this;
 }
 
 Chroma::spd& Chroma::spd::operator=(spd &&other)
 {
-    _wavelengths = std::move(other.wavelengths());
+    _wavelength_start = std::move(other.wavelength_start());
+    _wavelength_stop = std::move(other.wavelength_stop());
+    _wavelength_step = std::move(other.wavelength_step());
     _powers = std::move(other.powers());
     return *this;
 }
 
-const std::vector<float> &Chroma::spd::wavelengths(void) const
+std::vector<float> Chroma::spd::wavelengths(void) const
 {
-    return _wavelengths;
+    std::vector<float> wavelength_vec(_powers.size());
+    for(size_t i=0; i<wavelength_vec.size(); i++) {
+        wavelength_vec[i] = _wavelength_start + _wavelength_step*i;
+    }
+    return wavelength_vec;
 }
 
 const std::vector<float> &Chroma::spd::powers(void) const
@@ -83,9 +105,26 @@ const std::vector<float> &Chroma::spd::powers(void) const
     return _powers;
 }
 
+float Chroma::spd::wavelength_start(void) const
+{
+    return _wavelength_start;
+}
+
+float Chroma::spd::wavelength_step(void) const
+{
+    return _wavelength_step;
+}
+
+float Chroma::spd::wavelength_stop(void) const
+{
+    return _wavelength_stop;
+}
+
 bool Chroma::operator==(const Chroma::spd &lhs, const Chroma::spd &rhs)
 {
-    return (lhs.wavelengths() == rhs.wavelengths() and lhs.powers() == rhs.powers());
+    return (lhs.wavelength_start() == rhs.wavelength_start()
+            and lhs.wavelength_step() == rhs.wavelength_step()
+            and lhs.powers() == rhs.powers());
 }
 
 bool Chroma::operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs)
@@ -98,24 +137,24 @@ Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, s
     /* Anything gross in here is an effort to avoid copy-construction */
     const Chroma::spd *lhs, *rhs;
     Chroma::spd temp;
-    if(l.wavelengths().size() < 2 or r.wavelengths().size() < 2)
+    if(l.powers().size() < 2 or r.powers().size() < 2)
     {
         throw std::runtime_error("Attempting to do math on an empty SPD.");
     }
-    if(l.wavelengths() != r.wavelengths())
+    if(   l.wavelength_step() != r.wavelength_step()
+       or l.wavelength_start() != r.wavelength_start()
+       or l.wavelength_stop() != r.wavelength_stop())
     {
         /* we're going to reshape to match the one with the best resolution. */
-        float lhsstep = l.wavelengths()[1]-l.wavelengths()[0];
-        float rhsstep = r.wavelengths()[1]-r.wavelengths()[0];
-        if(lhsstep < rhsstep)
+        if(l.wavelength_step() < r.wavelength_step())
         {
             lhs = &l;
-            temp = r.reshape(l.wavelengths());
+            temp = r.reshape(l.wavelength_start(), l.wavelength_stop(), l.wavelength_step());
             rhs = const_cast <const Chroma::spd *>(&temp);
         }
         else
         {
-            temp = l.reshape(r.wavelengths());
+            temp = l.reshape(r.wavelength_start(), r.wavelength_stop(), r.wavelength_step());
             lhs = const_cast <const Chroma::spd *>(&temp);
             rhs = &r;
         }
@@ -125,18 +164,20 @@ Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, s
         lhs = &l;
         rhs = &r;
     }
-    std::vector<float> result(lhs->wavelengths().size());
+    std::vector<float> result(lhs->powers().size());
     for(size_t i=0; i<result.size(); i++)
     {
         result[i] = operation(lhs->powers()[i], rhs->powers()[i]);
     }
-    return {lhs->wavelengths(), result};
+    return {lhs->wavelength_start(), lhs->wavelength_step(), result};
 }
 
 Chroma::spd &Chroma::spd::operator+=(const Chroma::spd &rhs)
 {
     Chroma::spd result = spd_arithmetic(*this, rhs, std::plus<float>());
-    _wavelengths = result.wavelengths();
+    _wavelength_start = result.wavelength_start();
+    _wavelength_stop = result.wavelength_stop();
+    _wavelength_step = result.wavelength_step();
     _powers = result.powers();
     return *this;
 }
@@ -144,7 +185,9 @@ Chroma::spd &Chroma::spd::operator+=(const Chroma::spd &rhs)
 Chroma::spd &Chroma::spd::operator-=(const Chroma::spd &rhs)
 {
     Chroma::spd result = spd_arithmetic(*this, rhs, std::minus<float>());
-    _wavelengths = result.wavelengths();
+    _wavelength_start = result.wavelength_start();
+    _wavelength_stop = result.wavelength_stop();
+    _wavelength_step = result.wavelength_step();
     _powers = result.powers();
     return *this;
 }
@@ -152,7 +195,9 @@ Chroma::spd &Chroma::spd::operator-=(const Chroma::spd &rhs)
 Chroma::spd &Chroma::spd::operator*=(const Chroma::spd &rhs)
 {
     Chroma::spd result = spd_arithmetic(*this, rhs, std::multiplies<float>());
-    _wavelengths = result.wavelengths();
+    _wavelength_start = result.wavelength_start();
+    _wavelength_stop = result.wavelength_stop();
+    _wavelength_step = result.wavelength_step();
     _powers = result.powers();
     return *this;
 }
@@ -160,7 +205,9 @@ Chroma::spd &Chroma::spd::operator*=(const Chroma::spd &rhs)
 Chroma::spd &Chroma::spd::operator/=(const Chroma::spd &rhs)
 {
     Chroma::spd result = spd_arithmetic(*this, rhs, std::divides<float>());
-    _wavelengths = result.wavelengths();
+    _wavelength_start = result.wavelength_start();
+    _wavelength_stop = result.wavelength_stop();
+    _wavelength_step = result.wavelength_step();
     _powers = result.powers();
     return *this;
 }
@@ -207,27 +254,24 @@ float Chroma::spd::lumens(void) const
  * Caveat: Old (and new) wavelength vectors must be monotonically increasing and equally
  * spaced. The constructor checks this for you.
  */
-Chroma::spd Chroma::spd::reshape(const std::vector<float> &new_wavelengths) const
+Chroma::spd Chroma::spd::reshape(float wavelength_start, float wavelength_stop, float wavelength_step) const
 {
-    if(_wavelengths.size() < 2 or new_wavelengths.size() < 2)
-    {
-        throw std::runtime_error("Invalid wavelength array"); //TODO: pick a better error
-    }
-
-    if(new_wavelengths[0] < _wavelengths[0] or new_wavelengths[new_wavelengths.size()-1] > _wavelengths[_wavelengths.size()-1])
+    if(wavelength_start < _wavelength_start or wavelength_stop > _wavelength_start+(_wavelength_step*_powers.size()))
     {
 //        std::cerr << "Chroma::reshape: Warning: Attempting to interpolate outside dataset. Some bins will be set to zero." << std::endl;
     }
 
     /* Do the actual interpolation */
-    std::vector<float> new_powers(new_wavelengths.size());
-    size_t step = _wavelengths[1] - _wavelengths[0];
+    std::vector<float> new_powers(std::ceil((wavelength_stop-wavelength_start)/wavelength_step)+1);
     for(size_t i=0; i<new_powers.size(); i++)
     {
-       int old_index = (new_wavelengths[i] - _wavelengths[0]) / step;
-       if(old_index < 0) new_powers[i] = 0;
-       else if(size_t(old_index) > _wavelengths.size()-1) new_powers[i] = 0;
-       else new_powers[i] = _powers[old_index] + (_powers[old_index+1]-_powers[old_index])*((new_wavelengths[i]-_wavelengths[old_index])/(_wavelengths[old_index+1]-_wavelengths[old_index]));
+        /* get the index into the old array of each new wavelength */
+        float wavelength = wavelength_start+i*wavelength_step;
+        int old_index = (wavelength - _wavelength_start) / _wavelength_step;
+        float old_wavelength = _wavelength_start+old_index*_wavelength_step;
+        if(old_index < 0) new_powers[i] = 0;
+        else if(size_t(old_index) > _powers.size()-1) new_powers[i] = 0;
+        else new_powers[i] = _powers[old_index] + (_powers[old_index+1]-_powers[old_index])*((wavelength-old_wavelength)/(_wavelength_step));
     }
-    return {new_wavelengths, new_powers};
+    return {wavelength_start, wavelength_step, new_powers};
 }

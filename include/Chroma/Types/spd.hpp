@@ -28,6 +28,7 @@ public:
     spd();
     /* Create an SPD from a pair of lists {wavelengths, powers} */
     spd(const std::vector<float> &wavelengths, const std::vector<float> &powers);
+    spd(float wavelength_start, float wavelength_step, const std::vector<float> &powers);
 
     /* Copy constructor */
     spd(const spd &other);
@@ -52,11 +53,15 @@ public:
     float sum() const;
 
     /* Getters */
-    const std::vector<float> &wavelengths() const;
+    std::vector<float> wavelengths() const;
     const std::vector<float> &powers() const;
 
+    float wavelength_start() const;
+    float wavelength_stop() const;
+    float wavelength_step() const;
+
     /* Return a new SPD reshaped to the desired wavelength vector */
-    spd reshape(const std::vector<float> &new_wavelengths) const;
+    spd reshape(float wavelength_start, float wavelength_stop, float wavelength_step) const;
 
     /* Return a new SPD normalized to max power 1 */
     spd normalize() const;
@@ -65,7 +70,10 @@ public:
     spd normalize_luminosity(float lumens) const;
 
 private:
-    std::vector<float> _wavelengths;
+    float _wavelength_start;
+    float _wavelength_stop;
+    float _wavelength_step;
+
     std::vector<float> _powers;
 };
 
