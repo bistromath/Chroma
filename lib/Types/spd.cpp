@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include <functional>
 
 Chroma::spd::spd()
 {}
@@ -92,7 +93,7 @@ bool Chroma::operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs)
     return not (lhs==rhs);
 }
 
-Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, std::string operation)
+Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, std::function<float(const float, const float)> operation)
 {
     /* Anything gross in here is an effort to avoid copy-construction */
     const Chroma::spd *lhs, *rhs;
@@ -127,17 +128,14 @@ Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, s
     std::vector<float> result(lhs->wavelengths().size());
     for(size_t i=0; i<result.size(); i++)
     {
-        if     (operation == "+") result[i] = lhs->powers()[i] + rhs->powers()[i];
-        else if(operation == "-") result[i] = lhs->powers()[i] - rhs->powers()[i];
-        else if(operation == "*") result[i] = lhs->powers()[i] * rhs->powers()[i];
-        else if(operation == "/") result[i] = lhs->powers()[i] / rhs->powers()[i];
+        result[i] = operation(lhs->powers()[i], rhs->powers()[i]);
     }
     return {lhs->wavelengths(), result};
 }
 
 Chroma::spd &Chroma::spd::operator+=(const Chroma::spd &rhs)
 {
-    Chroma::spd result = spd_arithmetic(*this, rhs, "+");
+    Chroma::spd result = spd_arithmetic(*this, rhs, std::plus<float>());
     _wavelengths = result.wavelengths();
     _powers = result.powers();
     return *this;
@@ -145,7 +143,7 @@ Chroma::spd &Chroma::spd::operator+=(const Chroma::spd &rhs)
 
 Chroma::spd &Chroma::spd::operator-=(const Chroma::spd &rhs)
 {
-    Chroma::spd result = spd_arithmetic(*this, rhs, "-");
+    Chroma::spd result = spd_arithmetic(*this, rhs, std::minus<float>());
     _wavelengths = result.wavelengths();
     _powers = result.powers();
     return *this;
@@ -153,7 +151,7 @@ Chroma::spd &Chroma::spd::operator-=(const Chroma::spd &rhs)
 
 Chroma::spd &Chroma::spd::operator*=(const Chroma::spd &rhs)
 {
-    Chroma::spd result = spd_arithmetic(*this, rhs, "*");
+    Chroma::spd result = spd_arithmetic(*this, rhs, std::multiplies<float>());
     _wavelengths = result.wavelengths();
     _powers = result.powers();
     return *this;
@@ -161,7 +159,7 @@ Chroma::spd &Chroma::spd::operator*=(const Chroma::spd &rhs)
 
 Chroma::spd &Chroma::spd::operator/=(const Chroma::spd &rhs)
 {
-    Chroma::spd result = spd_arithmetic(*this, rhs, "/");
+    Chroma::spd result = spd_arithmetic(*this, rhs, std::divides<float>());
     _wavelengths = result.wavelengths();
     _powers = result.powers();
     return *this;

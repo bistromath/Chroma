@@ -1,7 +1,7 @@
-if(DEFINED INCLUDED_POTHOS_STANDARD_FLAGS_CMAKE)
+if(DEFINED INCLUDED_CHROMA_STANDARD_FLAGS_CMAKE)
     return()
 endif()
-set(INCLUDED_POTHOS_STANDARD_FLAGS_CMAKE TRUE)
+set(INCLUDED_CHROMA_STANDARD_FLAGS_CMAKE TRUE)
 
 ########################################################################
 # Provide add_compile_options() when not available

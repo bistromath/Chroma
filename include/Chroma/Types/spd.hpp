@@ -19,6 +19,7 @@
 #include <Chroma/Config.hpp>
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace Chroma {
 
@@ -69,7 +70,7 @@ private:
 };
 
 /* Math operations */
-Chroma::spd spd_arithmetic(const Chroma::spd &lhs, const Chroma::spd &rhs, std::string operation);
+Chroma::spd spd_arithmetic(const Chroma::spd &lhs, const Chroma::spd &rhs, std::function<float(const float, const float)> operation);
 bool CHROMA_API operator==(const Chroma::spd &lhs, const Chroma::spd &rhs);
 bool CHROMA_API operator!=(const Chroma::spd &lhs, const Chroma::spd &rhs);
 Chroma::spd CHROMA_API operator+(Chroma::spd lhs, const Chroma::spd &rhs);
