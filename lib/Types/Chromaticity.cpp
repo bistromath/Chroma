@@ -26,10 +26,10 @@ inline float clip(float val, float min, float max)
 
 Chroma::XYZ::XYZ(float x, float y, float z) : X(x), Y(y), Z(z) {;}
 
-Chroma::XYZ::XYZ(const Chroma::xyY &chrom)
+Chroma::XYZ::XYZ(Chroma::xyY chrom)
 {
-    clip(chrom.x, FLT_MIN, 1);
-    clip(chrom.y, FLT_MIN, 1);
+    chrom.x = clip(chrom.x, FLT_MIN, 1);
+    chrom.y = clip(chrom.y, FLT_MIN, 1);
     Y = chrom.Y;
     float tmp = Y/chrom.y;
     X = tmp*chrom.x;

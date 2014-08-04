@@ -32,7 +32,7 @@ struct Luv;
 struct CHROMA_API XYZ {
     /* Constructors */
     XYZ(float x, float y, float z);
-    XYZ(const xyY &chrom);
+    XYZ(xyY chrom);
     XYZ(const uv &chrom);
     XYZ(const Chroma::spd &s);
 //    XYZ(rgb &color, const Chroma::Transform &xform);
