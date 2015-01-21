@@ -141,8 +141,8 @@ float Chroma::operator-(const Chroma::UVW &lhs, const Chroma::UVW &rhs)
 
 Chroma::Lab::Lab(const Chroma::XYZ &xyz, const Chroma::XYZ &whitepoint)
 {
-    float sigma = 216.0f/24389.0f;
-    float kappa = 24389.0f/27.0f;
+    const float sigma = 216.0f/24389.0f;
+    const float kappa = 24389.0f/27.0f;
     auto f = [&sigma, &kappa](float i) { if(i>sigma) return powf(i, 1.0f/3.0f); else return (kappa*i+16)/116; };
     float x = f(xyz.X/whitepoint.X);
     float y = f(xyz.Y/whitepoint.Y);
