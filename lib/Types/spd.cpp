@@ -48,10 +48,10 @@ Chroma::spd::spd(const std::vector<float> &wavelengths, const std::vector<float>
     _powers = powers;
 }
 
-Chroma::spd::spd(float wavelength_start, float wavelength_step, const std::vector<float> &powers)
+Chroma::spd::spd(float wavelength_start, float wavelength_stop, const std::vector<float> &powers)
     : _wavelength_start(wavelength_start),
-      _wavelength_stop(wavelength_start+powers.size()*wavelength_step),
-      _wavelength_step(wavelength_step),
+      _wavelength_stop(wavelength_stop),
+      _wavelength_step((wavelength_stop-wavelength_start) / (powers.size()-1)),
       _powers(powers)
 {
 }
@@ -169,7 +169,7 @@ Chroma::spd Chroma::spd_arithmetic(const Chroma::spd &l, const Chroma::spd &r, s
     {
         result[i] = operation(lhs->powers()[i], rhs->powers()[i]);
     }
-    return {lhs->wavelength_start(), lhs->wavelength_step(), result};
+    return {lhs->wavelength_start(), lhs->wavelength_stop(), result};
 }
 
 Chroma::spd &Chroma::spd::operator+=(const Chroma::spd &rhs)
@@ -273,5 +273,5 @@ Chroma::spd Chroma::spd::reshape(float wavelength_start, float wavelength_stop, 
         else if(size_t(old_index) > _powers.size()-1) new_powers[i] = 0;
         else new_powers[i] = _powers[old_index] + (_powers[old_index+1]-_powers[old_index])*((wavelength-old_wavelength)/(_wavelength_step));
     }
-    return {wavelength_start, wavelength_step, new_powers};
+    return {wavelength_start, wavelength_stop, new_powers};
 }

@@ -28,7 +28,7 @@ public:
     spd();
     /* Create an SPD from a pair of lists {wavelengths, powers} */
     spd(const std::vector<float> &wavelengths, const std::vector<float> &powers);
-    spd(float wavelength_start, float wavelength_step, const std::vector<float> &powers);
+    spd(float wavelength_start, float wavelength_stop, const std::vector<float> &powers);
 
     /* Copy constructor */
     spd(const spd &other);
